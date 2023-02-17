@@ -1,6 +1,6 @@
 import readline from "readline";
 import { runSimulation, Command } from "./simulator";
-
+import { messages } from "./messages";
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -17,37 +17,53 @@ async function promptUser(question: string): Promise<string> {
 export async function getInput(): Promise<
   [number, number, number, number, Command[]]
 > {
-  const tableDimensionsInput = await promptUser(
-    "Enter table width and height: "
-  );
-  const [tableWidth, tableHeight] = tableDimensionsInput.split(" ").map(Number);
+  console.log(messages.welcomeMessage);
+  console.log(messages.tableDimensionsPrompt);
+  const tableDimensionsInput = await promptUser("Table dimensions: ");
+  const [tableWidth, tableHeight] = tableDimensionsInput.split(",").map(Number);
 
   if (isNaN(tableWidth) || isNaN(tableHeight)) {
-    console.error("Invalid table dimensions - please enter two numbers.");
+    console.error(messages.invalidTableDimensions);
     return getInput();
   }
 
-  const robotPositionInput = await promptUser("Enter robot position: ");
-  const [robotX, robotY] = robotPositionInput.split(" ").map(Number);
+  console.log(
+    messages.tableDimensionsSet
+      .replace("{tableWidth}", tableWidth.toString())
+      .replace("{tableHeight}", tableHeight.toString())
+  );
+  console.log(messages.robotPositionPrompt);
+  const robotPositionInput = await promptUser("Initial position: ");
+  const [robotX, robotY] = robotPositionInput.split(",").map(Number);
 
   if (isNaN(robotX) || isNaN(robotY)) {
-    console.error("Invalid robot position - please enter two numbers.");
+    console.error(messages.invalidRobotPosition);
     return getInput();
   }
 
-  const commandsInput = await promptUser("Enter commands: ");
+  console.log(
+    messages.robotPlaced
+      .replace("{robotX}", robotX.toString())
+      .replace("{robotY}", robotY.toString())
+  );
+  console.log(messages.commandsPrompt);
+  console.log(messages.validCommands);
+  const commandsInput = await promptUser("Commands: ");
   const commands = commandsInput
-    .split(" ")
+    .split(",")
     .map(Number)
     .filter(
       (command) => !isNaN(command) && command >= 0 && command <= 4
     ) as Command[];
 
-  if (commands.length !== commandsInput.split(" ").length) {
-    console.error("Invalid command - please enter a number between 0 and 4.");
+  if (commands.length !== commandsInput.split(",").length) {
+    console.error(messages.invalidCommand);
     return getInput();
   }
 
+  console.log(
+    messages.commandsGiven.replace("{numCommands}", commands.length.toString())
+  );
   return [tableWidth, tableHeight, robotX, robotY, commands];
 }
 
