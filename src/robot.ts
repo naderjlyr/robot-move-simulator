@@ -18,7 +18,7 @@ const moveFunctions: Record<Direction, (robot: Robot) => Robot> = {
 export const createRobot = (
   x: number,
   y: number,
-  direction: Direction
+  direction: Direction = "North"
 ): Robot => {
   return { x, y, direction };
 };
